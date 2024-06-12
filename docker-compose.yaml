@@ -1,0 +1,15 @@
+name: analyzer
+
+services:
+  analyzer:
+    container_name: fin-analyzer-service
+    build:
+      context: .
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+      - ./node_modules:/usr/src/app/node_modules
+    restart: on-failure
+    ports:
+      - "8000:8000"

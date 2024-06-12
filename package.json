@@ -1,0 +1,38 @@
+{
+  "name": "fin-analyzer-service",
+  "version": "0.0.1",
+  "description": "Financial analyzer service",
+  "main": "app/index.js",
+  "scripts": {
+    "start": "node ./app/index.js",
+    "start:dev": "nodemon --legacy-watch --experimental-worker --inspect=0.0.0.0:9229 ./app/index.js",
+    "compose:start": "docker-compose up -d analyzer",
+    "compose:stop": "docker-compose stop",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sergiy-mykhailov/fin-analyzer-service.git"
+  },
+  "author": "Serhii Mykhailov",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sergiy-mykhailov/fin-analyzer-service/issues"
+  },
+  "homepage": "https://github.com/sergiy-mykhailov/fin-analyzer-service#readme",
+  "dependencies": {
+    "@hapi/hapi": "^21.3.9",
+    "axios": "^1.7.2",
+    "hapi-pino": "^12.1.0",
+    "joi": "^17.13.1",
+    "pino": "^9.2.0",
+    "pino-pretty": "^11.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.4.0",
+    "@stylistic/eslint-plugin": "^2.1.0",
+    "eslint": "^8.57.0",
+    "globals": "^15.4.0",
+    "nodemon": "^3.1.3"
+  }
+}
