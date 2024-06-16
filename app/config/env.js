@@ -13,4 +13,8 @@ module.exports = {
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_NAME,
   },
+  dataProvider: {
+    baseUrl: process.env.FINAGE_API_BASE_URL,
+    apiKey: process.env.FINAGE_API_KEY,
+  },
 };
