@@ -14,7 +14,7 @@ const prettyPrintProps = isProd
 module.exports = {
   plugin: require('hapi-pino'),
   options: {
-    ignorePaths: ['/health'],
+    ignorePaths: ['/health', '/ping'],
     logPayload: true,
     logRouteTags: true,
     ...prettyPrintProps,

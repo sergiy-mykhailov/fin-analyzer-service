@@ -5,9 +5,13 @@
   "main": "app/index.js",
   "scripts": {
     "start": "node ./app/index.js",
-    "start:dev": "nodemon --legacy-watch --experimental-worker --inspect=0.0.0.0:9229 ./app/index.js",
-    "compose:start": "docker-compose up -d analyzer",
+    "start:dev": "nodemon --legacy-watch --experimental-worker ./app/index.js",
+    "compose:start": "docker-compose up -d",
     "compose:stop": "docker-compose stop",
+    "db:create": "node ./tools/create-db.js",
+    "db:migrate": "knex migrate:up",
+    "db:migrate:local": "env-cmd -f ./.env.local knex migrate:up",
+    "db:migrate:down:local": "env-cmd -f ./.env.local knex migrate:down",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,16 +25,22 @@
   },
   "homepage": "https://github.com/sergiy-mykhailov/fin-analyzer-service#readme",
   "dependencies": {
+    "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.9",
     "axios": "^1.7.2",
     "hapi-pino": "^12.1.0",
     "joi": "^17.13.1",
+    "knex": "^3.1.0",
+    "lodash": "^4.17.21",
+    "objection": "^3.1.4",
+    "pg": "^8.12.0",
     "pino": "^9.2.0",
     "pino-pretty": "^11.2.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.4.0",
     "@stylistic/eslint-plugin": "^2.1.0",
+    "env-cmd": "^10.1.0",
     "eslint": "^8.57.0",
     "globals": "^15.4.0",
     "nodemon": "^3.1.3"
