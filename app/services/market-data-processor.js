@@ -1,14 +1,30 @@
+const get = require('lodash/get');
 const finAge = require('../apis/finage');
 const { MARKET_TYPE } = require('../constants/market-data');
+const Instrument = require('../models/instrument');
 
 const refreshInstruments = async () => {
-  const instruments = await finAge.getSymbolList(MARKET_TYPE.FOREX);
-  // TODO: before save new instrument - delete old
-  // TODO: save instruments to the database
-  // TODO: if instruments.totalPage > 1 -> get and save rest instruments
-  // TODO add model for instruments
+  const symbols = [];
 
-  return instruments;
+  const instrumentsFirstPart = await finAge.getSymbolList(MARKET_TYPE.FOREX);
+  symbols.push(...get(instrumentsFirstPart, 'symbols', []));
+
+  if (instrumentsFirstPart.totalPage > 1) {
+    const queries = [];
+    for (let page = 2; page <= instrumentsFirstPart.totalPage; page++) {
+      queries.push(finAge.getSymbolList(MARKET_TYPE.FOREX, page));
+    }
+
+    const instrumentsRest = await Promise.all(queries);
+    instrumentsRest.forEach((result) => {
+      symbols.push(...get(result, 'symbols', []));
+    });
+  }
+
+  await Instrument.deleteAll();
+  await Instrument.insert(symbols);
+
+  return symbols;
 };
 
 const getAggregated = async () => {

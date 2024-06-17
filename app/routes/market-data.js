@@ -1,5 +1,6 @@
 const Joi = require('joi');
 const { refreshInstruments, getAggregated } = require('../handlers/market-data');
+const validatorRes = require('../validators/response');
 
 module.exports = [
   {
@@ -11,7 +12,7 @@ module.exports = [
       response: {
         failAction: 'log',
         status: {
-          200: Joi.string(),
+          204: validatorRes.noContent,
         },
       },
     },
