@@ -4,20 +4,6 @@ const validatorRes = require('../validators/response');
 
 module.exports = [
   {
-    method: 'POST',
-    path: '/market-data/instruments',
-    options: {
-      handler: refreshInstruments,
-      description: 'Gets and stores a list of instruments from the market API',
-      response: {
-        failAction: 'log',
-        status: {
-          204: validatorRes.noContent,
-        },
-      },
-    },
-  },
-  {
     method: 'GET',
     path: '/market-data/aggregated',
     options: {

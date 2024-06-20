@@ -1,10 +1,5 @@
-const dataProcessor = require('../services/market-data-processor');
+const dataProcessor = require('../services/market-data-collector');
 
-const refreshInstruments = async (request, h) => {
-  await dataProcessor.refreshInstruments();
-
-  return h.code(204);
-};
 
 const getAggregated = async () => {
   const aggregated = await dataProcessor.getAggregated();
