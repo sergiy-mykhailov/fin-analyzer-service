@@ -1,6 +1,6 @@
 const pino = require('pino');
 const pretty = require('pino-pretty');
-const { isProd } = require('../config/env');
+const { isProd } = require('../constants/env');
 
 const pinoOptions = {
   level: isProd ? 'info' : 'debug',

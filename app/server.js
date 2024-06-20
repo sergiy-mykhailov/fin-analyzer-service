@@ -1,5 +1,5 @@
 const Hapi = require('@hapi/hapi');
-const config = require('./config/env');
+const config = require('./constants/env');
 const { preResponse } = require('./utils/errors');
 const routes = require('./routes');
 const logger = require('./plugins/logger');

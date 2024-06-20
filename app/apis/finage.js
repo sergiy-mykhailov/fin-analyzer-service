@@ -1,5 +1,5 @@
 const axios = require('axios');
-const config = require('../config/env');
+const config = require('../constants/env');
 const { throwError } = require('../utils/errors');
 
 const headers = {

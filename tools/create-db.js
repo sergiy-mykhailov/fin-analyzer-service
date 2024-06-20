@@ -1,5 +1,5 @@
 const Knex = require('knex');
-const config = require('../app/config/env');
+const config = require('../app/constants/env');
 const knexfile = require('../knexfile');
 
 const start = async () => {

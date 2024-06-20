@@ -1,4 +1,4 @@
-const { isProd } = require('../config/env');
+const { isProd } = require('../constants/env');
 
 const prettyPrintProps = isProd
   ? {}

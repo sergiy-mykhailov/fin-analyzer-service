@@ -1,4 +1,5 @@
-const config = require('./app/config/env');
+const { knexSnakeCaseMappers } = require('objection');
+const config = require('./app/constants/env');
 
 module.exports = {
   development: {

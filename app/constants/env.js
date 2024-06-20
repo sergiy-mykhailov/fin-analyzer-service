@@ -1,4 +1,4 @@
-const { NODE_ENV_PRODUCTION } = require('../constants/common');
+const { NODE_ENV_PRODUCTION } = require('./common');
 
 module.exports = {
   isProd: process.env.NODE_ENV === NODE_ENV_PRODUCTION,
