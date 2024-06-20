@@ -23,19 +23,6 @@ class Candle extends Model {
     };
   }
 
-  static get relationMappings() {
-    return {
-      instrument: {
-        relation: Model.HasOneRelation,
-        modelClass: Instrument,
-        join: {
-          from: `${this.tableName}.instrumentId`,
-          to: `${Instrument.tableName}.id`,
-        },
-      },
-    };
-  }
-
   static insert(items) {
     return this.query().insert(items);
   }
