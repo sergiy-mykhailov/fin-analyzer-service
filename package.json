@@ -12,6 +12,8 @@
     "db:migrate": "knex migrate:up",
     "db:migrate:local": "env-cmd -f ./.env.local knex migrate:up",
     "db:migrate:down:local": "env-cmd -f ./.env.local knex migrate:down",
+    "db:seed": "knex seed:run",
+    "db:seed:local": "env-cmd -f ./.env.local knex seed:run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -28,6 +30,7 @@
     "@hapi/boom": "^10.0.1",
     "@hapi/hapi": "^21.3.9",
     "axios": "^1.7.2",
+    "dayjs": "^1.11.11",
     "hapi-pino": "^12.1.0",
     "joi": "^17.13.1",
     "knex": "^3.1.0",

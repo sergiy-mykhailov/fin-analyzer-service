@@ -1,13 +1,10 @@
 const dataProcessor = require('../services/market-data-collector');
 
 
-const getAggregated = async () => {
-  const aggregated = await dataProcessor.getAggregated();
-
-  return aggregated;
+const getMarketData = async () => {
+  return dataProcessor.getMarketData();
 };
 
 module.exports = {
-  refreshInstruments,
-  getAggregated,
+  getMarketData,
 };

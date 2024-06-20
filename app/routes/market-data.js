@@ -1,18 +1,17 @@
-const Joi = require('joi');
-const { refreshInstruments, getAggregated } = require('../handlers/market-data');
-const validatorRes = require('../validators/response');
+const { getMarketData } = require('../handlers/market-data');
+const validatorRes = require('../validators/marketDataRes');
 
 module.exports = [
   {
     method: 'GET',
-    path: '/market-data/aggregated',
+    path: '/market-data',
     options: {
-      handler: getAggregated,
-      description: 'Gets aggregated market data',
+      handler: getMarketData,
+      description: 'Gets market data',
       response: {
         failAction: 'log',
         status: {
-          200: Joi.string(),
+          200: validatorRes.getMarketData,
         },
       },
     },

@@ -17,8 +17,12 @@ class Instrument extends Model {
     };
   }
 
-  static insert(instruments) {
-    return this.query().insert(instruments);
+  static findAll() {
+    return this.query().select();
+  }
+
+  static insert(items) {
+    return this.query().insert(items);
   }
 
   static deleteAll() {
