@@ -18,6 +18,10 @@ module.exports = {
     migrations: {
       tableName: 'migrations',
     },
+    seeds: {
+      directory: './seeds',
+    },
+    ...knexSnakeCaseMappers(),
   },
   cli: {
     client: 'postgresql',
@@ -29,6 +33,9 @@ module.exports = {
     },
     migrations: {
       tableName: 'migrations',
+    },
+    seeds: {
+      directory: './seeds',
     },
   },
 };

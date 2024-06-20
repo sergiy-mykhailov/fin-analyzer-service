@@ -11,17 +11,38 @@
 
 ## Scripts
 
+### Common
+
 Create database (from container):
 ```shell
 npm run db:create
 ```
 
-Run migrations (from container):
+Connect to the database (from `postgres` container):
+```shell
+psql -h 0.0.0.0 -p 5432 -U postgres -d analyzer
+```
+
+### Migrations
+
+Generate migration file:
+```shell
+knex migrate:make migration_name
+```
+
+Run migrations  (from container):
 ```shell
 npm run db:migrate
 ```
 
-Connect to the database (from `postgres` container):
+### Seeds
+
+Generate seed file:
 ```shell
-psql -h 0.0.0.0 -p 5432 -U postgres -d analyzer
+knex seed:make seed_name
+```
+
+Run seed (from container):
+```shell
+npm run db:seed
 ```
