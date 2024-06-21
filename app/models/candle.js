@@ -1,5 +1,4 @@
 const { Model } = require('objection');
-const Instrument = require('./instrument');
 
 class Candle extends Model {
   static get tableName() {
@@ -14,23 +13,23 @@ class Candle extends Model {
         id: { type: 'integer', minimum: 1 },
         instrumentId: { type: 'integer', minimum: 1 },
         timestamp: { format: 'date-time' },
-        open: { type: 'number', minimum: 1 },
-        close: { type: 'number', minimum: 1 },
-        high: { type: 'number', minimum: 1 },
-        low: { type: 'number', minimum: 1 },
-        volume: { type: 'number', minimum: 1 },
+        open: { type: 'number' },
+        close: { type: 'number' },
+        high: { type: 'number' },
+        low: { type: 'number' },
+        volume: { type: 'number' },
       },
     };
   }
 
-  static insert(items) {
-    return this.query().insert(items);
+  static insert(items, trx) {
+    return this.query(trx).insert(items);
   }
 
-  static deleteByInstrumentIdsInDateRange(instrumentIds, from, to) {
+  static deleteByInstrumentIdsInDateRange(instrumentIds, { from, to }, trx) {
     const range = from < to ? [from, to] : [to, from];
 
-    return this.query()
+    return this.query(trx)
       .whereIn('instrumentId', instrumentIds)
       .whereBetween('timestamp', range)
       .delete();

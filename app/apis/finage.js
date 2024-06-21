@@ -1,6 +1,7 @@
 const axios = require('axios');
 const config = require('../constants/env');
 const { throwError } = require('../utils/errors');
+const { omit } = require('lodash');
 
 const DEFAULT_TIME_MULTIPLIER = 1;
 const SIZE_OF_TIME = {
@@ -44,7 +45,7 @@ const getSymbolList = async (marketType, page, search) => {
   return response.data;
 };
 
-const getAggregates = async (props) => {
+const getAggregates = async (props, logger) => {
   const { symbol, from, to, st, et, limit } = props;
 
   const apiUrl = `agg/forex/${symbol}/${DEFAULT_TIME_MULTIPLIER}/${SIZE_OF_TIME.MINUTE}/${from}/${to}`;
@@ -60,16 +61,18 @@ const getAggregates = async (props) => {
     baseURL: config.dataProvider.baseUrl,
     headers,
     params,
+    validateStatus: () => true,
   });
 
   if (response.status !== 200 || !response.data) {
-    throwError('Error receiving aggregated data', response.status, response.statusText);
+    logger.error(omit(response, 'request'), `Error receiving aggregated data for ${symbol}`);
+    return null;
   }
 
   return response.data;
 };
 
-const getTicks = async (props) => {
+const getTicks = async (props, logger) => {
   const { symbol, date, limit } = props;
 
   const apiUrl = `history/ticks/forex/${symbol}/${date}`;
@@ -82,10 +85,12 @@ const getTicks = async (props) => {
     baseURL: config.dataProvider.baseUrl,
     headers,
     params,
+    validateStatus: () => true,
   });
 
   if (response.status !== 200 || !response.data) {
-    throwError('Error receiving tick data', response.status, response.statusText);
+    logger.error(omit(response, 'request'), `Error receiving tick data for ${symbol}`);
+    return null;
   }
 
   return response.data;

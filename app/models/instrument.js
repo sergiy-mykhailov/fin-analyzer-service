@@ -12,7 +12,7 @@ class Instrument extends Model {
       properties: {
         id: { type: 'integer', minimum: 1 },
         symbol: { type: 'string', minLength: 1, maxLength: 255 },
-        name: { type: ['string', 'null'], minLength: 1, maxLength: 255 },
+        name: { type: ['string', 'null'], maxLength: 255 },
       },
     };
   }

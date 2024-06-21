@@ -16,7 +16,7 @@ const getInstruments = async () => {
   return { instruments, symbolToInstrument };
 };
 
-const getAggregates = async (instruments, symbolToInstrument) => {
+const getAggregates = async (instruments, symbolToInstrument, logger) => {
   const date = dayjs().utc();
   const from = date.format('YYYY-MM-DD');
   const to = from;
@@ -26,16 +26,16 @@ const getAggregates = async (instruments, symbolToInstrument) => {
 
   const data = await Promise.all(
     instruments.map((instrument) =>
-      finAge.getAggregates({ symbol: instrument.symbol, from, to }),
+      finAge.getAggregates({ symbol: instrument.symbol, from, to }, logger),
     ),
   );
 
   const candles = [];
   const instrumentIds = [];
   data.forEach((item) => {
-    if (isEmpty(item.results)) return;
+    const result = get(item, 'results', []);
 
-    item.results.forEach((candle) => {
+    result.forEach((candle) => {
       const instrumentId = get(symbolToInstrument, [item.symbol, 'id']);
       if (!instrumentId) return;
 
@@ -55,32 +55,41 @@ const getAggregates = async (instruments, symbolToInstrument) => {
   return { candles, instrumentIds: uniq(instrumentIds) };
 };
 
-const saveCandles = async (candles, instrumentIds) => {
+const saveCandles = async (candles, instrumentIds, logger) => {
   if (isEmpty(candles)) return;
 
-  const maxDate = first(candles).timestamp;
-  const minDate = last(candles).timestamp;
+  const from = first(candles).timestamp;
+  const to = last(candles).timestamp;
 
-  await Candle.deleteByInstrumentIdsInDateRange(instrumentIds, minDate, maxDate);
-  await Candle.insert(candles);
+  const trx = await Candle.transaction();
+
+  try {
+    await Candle.deleteByInstrumentIdsInDateRange(instrumentIds, { from, to }, trx);
+    await Candle.insert(candles, trx);
+
+    await trx.commit();
+  } catch (err) {
+    logger.error(err);
+    await trx.rollback();
+  }
 };
 
-const getTicks = async (instruments, symbolToInstrument) => {
+const getTicks = async (instruments, symbolToInstrument, logger) => {
   const date = dayjs().utc().format('YYYY-MM-DD');
   // const limit = 20;
 
   const data = await Promise.all(
     instruments.map((instrument) =>
-      finAge.getTicks({ symbol: instrument.symbol, date }),
+      finAge.getTicks({ symbol: instrument.symbol, date }, logger),
     ),
   );
 
   const ticks = [];
   const instrumentIds = [];
   data.forEach((item) => {
-    if (isEmpty(item.ticks)) return;
+    const result = get(item, 'ticks', []);
 
-    item.ticks.forEach((tick) => {
+    result.forEach((tick) => {
       const instrumentId = get(symbolToInstrument, [item.symbol, 'id']);
       if (!instrumentId) return;
 
@@ -97,14 +106,26 @@ const getTicks = async (instruments, symbolToInstrument) => {
   return { ticks, instrumentIds: uniq(instrumentIds), date };
 };
 
-const saveTicks = async (candles, instrumentIds, date) => {
-  if (isEmpty(candles)) return;
+const saveTicks = async (ticks, instrumentIds, date, logger) => {
+  if (isEmpty(ticks)) return;
 
-  await Tick.deleteByInstrumentIdsAndDate(instrumentIds, date);
-  await Tick.insert(candles);
+  const from = first(ticks).timestamp;
+  const to = last(ticks).timestamp;
+
+  const trx = await Tick.transaction();
+
+  try {
+    await Tick.deleteByInstrumentIdsInDateRange(instrumentIds, { from, to }, trx);
+    await Tick.insert(ticks, trx);
+
+    await trx.commit();
+  } catch (err) {
+    logger.error(err);
+    await trx.rollback();
+  }
 };
 
-const getMarketData = async () => {
+const getMarketData = async (logger = console) => {
   const { instruments, symbolToInstrument } = await getInstruments();
   if (isEmpty(instruments)) return [];
 
@@ -112,17 +133,14 @@ const getMarketData = async () => {
     { candles, instrumentIds: candleInstrumentIds },
     { ticks, instrumentIds: tickInstrumentIds, date },
   ] = await Promise.all([
-    getAggregates(instruments, symbolToInstrument),
-    getTicks(instruments, symbolToInstrument),
+    getAggregates(instruments, symbolToInstrument, logger),
+    getTicks(instruments, symbolToInstrument, logger),
   ]);
 
   await Promise.all([
-    saveCandles(candles, candleInstrumentIds),
-    saveTicks(ticks, tickInstrumentIds, date),
+    saveCandles(candles, candleInstrumentIds, logger),
+    saveTicks(ticks, tickInstrumentIds, date, logger),
   ]);
-
-  //TODO: transactions for save methods
-  //TODO: log instead of throw for api
 
   return { candles, ticks };
 };

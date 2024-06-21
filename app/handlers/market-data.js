@@ -1,8 +1,8 @@
 const dataProcessor = require('../services/market-data-collector');
 
 
-const getMarketData = async () => {
-  return dataProcessor.getMarketData();
+const getMarketData = async (request) => {
+  return dataProcessor.getMarketData(request.logger);
 };
 
 module.exports = {

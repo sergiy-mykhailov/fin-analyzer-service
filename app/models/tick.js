@@ -14,19 +14,21 @@ class Tick extends Model {
         instrumentId: { type: 'integer', minimum: 1 },
         date: { format: 'date' },
         timestamp: { format: 'date-time' },
-        price: { type: 'number', minimum: 1 },
+        price: { type: 'number' },
       },
     };
   }
 
-  static insert(items) {
-    return this.query().insert(items);
+  static insert(items, trx) {
+    return this.query(trx).insert(items);
   }
 
-  static deleteByInstrumentIdsAndDate(instrumentIds, date) {
-    return this.query()
+  static deleteByInstrumentIdsInDateRange(instrumentIds, { from, to }, trx) {
+    const range = from < to ? [from, to] : [to, from];
+
+    return this.query(trx)
       .whereIn('instrumentId', instrumentIds)
-      .where('date', date)
+      .whereBetween('timestamp', range)
       .delete();
   }
 }
