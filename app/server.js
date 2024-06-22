@@ -2,6 +2,7 @@ const Hapi = require('@hapi/hapi');
 const config = require('./constants/env');
 const { preResponse } = require('./utils/errors');
 const routes = require('./routes');
+const cronJobs = require('./jobs');
 const logger = require('./plugins/logger');
 const database = require('./plugins/database');
 
@@ -10,7 +11,7 @@ const options = {
   host: config.service.host,
 };
 
-const plugins = [routes, logger, database];
+const plugins = [routes, logger, database, cronJobs];
 // TODO: add swagger
 
 const start = async () => {

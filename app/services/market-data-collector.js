@@ -16,10 +16,11 @@ const getInstruments = async () => {
   return { instruments, symbolToInstrument };
 };
 
-const getAggregates = async (instruments, symbolToInstrument, logger) => {
+const getAndPrepareAggregates = async (instruments, symbolToInstrument, logger) => {
   const date = dayjs().utc();
   const from = date.format('YYYY-MM-DD');
   const to = from;
+  // TODO: check parapeters:
   // const limit = 20;
   // const st = date.subtract(5, 'hour').format('HH:mm');
   // const et = date.format('HH:mm');
@@ -34,6 +35,8 @@ const getAggregates = async (instruments, symbolToInstrument, logger) => {
   const instrumentIds = [];
   data.forEach((item) => {
     const result = get(item, 'results', []);
+
+    if (isEmpty(result) || !Array.isArray(result)) return;
 
     result.forEach((candle) => {
       const instrumentId = get(symbolToInstrument, [item.symbol, 'id']);
@@ -74,8 +77,9 @@ const saveCandles = async (candles, instrumentIds, logger) => {
   }
 };
 
-const getTicks = async (instruments, symbolToInstrument, logger) => {
+const getAndPrepareTicks = async (instruments, symbolToInstrument, logger) => {
   const date = dayjs().utc().format('YYYY-MM-DD');
+  // TODO: check parapeters:
   // const limit = 20;
 
   const data = await Promise.all(
@@ -88,6 +92,8 @@ const getTicks = async (instruments, symbolToInstrument, logger) => {
   const instrumentIds = [];
   data.forEach((item) => {
     const result = get(item, 'ticks', []);
+
+    if (isEmpty(result) || !Array.isArray(result)) return;
 
     result.forEach((tick) => {
       const instrumentId = get(symbolToInstrument, [item.symbol, 'id']);
@@ -103,10 +109,10 @@ const getTicks = async (instruments, symbolToInstrument, logger) => {
     });
   });
 
-  return { ticks, instrumentIds: uniq(instrumentIds), date };
+  return { ticks, instrumentIds: uniq(instrumentIds) };
 };
 
-const saveTicks = async (ticks, instrumentIds, date, logger) => {
+const saveTicks = async (ticks, instrumentIds, logger) => {
   if (isEmpty(ticks)) return;
 
   const from = first(ticks).timestamp;
@@ -125,26 +131,35 @@ const saveTicks = async (ticks, instrumentIds, date, logger) => {
   }
 };
 
-const getMarketData = async (logger = console) => {
+const getCandles = async (logger = console) => {
   const { instruments, symbolToInstrument } = await getInstruments();
   if (isEmpty(instruments)) return [];
 
-  const [
-    { candles, instrumentIds: candleInstrumentIds },
-    { ticks, instrumentIds: tickInstrumentIds, date },
-  ] = await Promise.all([
-    getAggregates(instruments, symbolToInstrument, logger),
-    getTicks(instruments, symbolToInstrument, logger),
-  ]);
+  const {
+    candles,
+    instrumentIds,
+  } = await getAndPrepareAggregates(instruments, symbolToInstrument, logger);
 
-  await Promise.all([
-    saveCandles(candles, candleInstrumentIds, logger),
-    saveTicks(ticks, tickInstrumentIds, date, logger),
-  ]);
+  await saveCandles(candles, instrumentIds, logger);
 
-  return { candles, ticks };
+  return candles;
+};
+
+const getTicks = async (logger = console) => {
+  const { instruments, symbolToInstrument } = await getInstruments();
+  if (isEmpty(instruments)) return [];
+
+  const {
+    ticks,
+    instrumentIds,
+  } = await getAndPrepareTicks(instruments, symbolToInstrument, logger);
+
+  await saveTicks(ticks, instrumentIds, logger);
+
+  return ticks;
 };
 
 module.exports = {
-  getMarketData,
+  getCandles,
+  getTicks,
 };

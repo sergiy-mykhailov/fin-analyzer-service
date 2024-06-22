@@ -1,10 +1,14 @@
-const dataProcessor = require('../services/market-data-collector');
+const marketDataCollector = require('../services/market-data-collector');
 
+const getCandles = async (request) => {
+  return marketDataCollector.getCandles(request.logger);
+};
 
-const getMarketData = async (request) => {
-  return dataProcessor.getMarketData(request.logger);
+const getTicks = async (request) => {
+  return marketDataCollector.getTicks(request.logger);
 };
 
 module.exports = {
-  getMarketData,
+  getCandles,
+  getTicks,
 };
